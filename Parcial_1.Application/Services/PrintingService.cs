@@ -14,12 +14,14 @@ namespace Parcial_1.Application.Services;
 public class PrintingService : IPrintingService
 {
     private readonly IBus _bus;
+    private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IUnitOfWork _unitOfWork;
 
-    public PrintingService(IBus bus, IUnitOfWork unitOfWork)
+    public PrintingService(IBus bus, IUnitOfWork unitOfWork, ISendEndpointProvider sendEndpointProvider)
     {
         _bus = bus;
         _unitOfWork = unitOfWork;
+        _sendEndpointProvider = sendEndpointProvider;
     }
 
     public async Task<PrintResponseDto> CheckPrintStatusAsync(string documentName)
@@ -49,8 +51,12 @@ public class PrintingService : IPrintingService
 
         if (request.Priority < 1 || request.Priority > 10)
             return false;
-        var endpoint = await _bus.GetSendEndpoint(new Uri("queue:print-requests"));
-        await endpoint.Send(request);
+
+        await _bus.Publish<PrintRequestDto>(request, ctx =>
+        {
+            ctx.SetPriority((byte)request.Priority);
+        });              
+
         return true;
     }
     private PrintResponseDto MapperPrintedADto(PrintedDocument document)

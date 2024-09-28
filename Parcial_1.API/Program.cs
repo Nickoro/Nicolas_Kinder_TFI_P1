@@ -26,8 +26,8 @@ builder.Services.AddDbContext<Parcial1Context>(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<PrintResponseService>();
     x.AddConsumer<PrintRequestService>();
+    x.AddConsumer<PrintResponseService>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -37,8 +37,19 @@ builder.Services.AddMassTransit(x =>
             h.Password("guest");
         });
 
+        cfg.Send<PrintRequestDto>(s =>
+        {
+            s.UseRoutingKeyFormatter(context => "print-requests");
+        });
+
+        cfg.Message<PrintRequestDto>(m => m.SetEntityName("print-requests"));
+
         cfg.ReceiveEndpoint("print-requests", e =>
         {
+            e.UseMessageRetry(r => r.Immediate(5));
+            e.ConfigureConsumeTopology = false;
+            e.PurgeOnStartup = true;
+            e.SetQueueArgument("x-max-priority", 10);
             e.ConfigureConsumer<PrintRequestService>(context);
         });
 

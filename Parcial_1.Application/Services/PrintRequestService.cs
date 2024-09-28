@@ -20,6 +20,8 @@ public class PrintRequestService : IConsumer<PrintRequestDto>
     public async Task Consume(ConsumeContext<PrintRequestDto> context)
     {
         var request = context.Message;
+        var priority = context.Message.Priority;
+        Console.WriteLine($"Processing print request for {request.DocumentName} with priority {priority}");
         if (SimulatePrinting())
         {
             var response = new PrintResponseDto
