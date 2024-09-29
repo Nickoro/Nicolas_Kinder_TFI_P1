@@ -35,6 +35,8 @@ public class PrintRequestService : IConsumer<PrintRequestDto>
     private bool SimulatePrinting()
     {
         // Simular éxito o fallo aleatorio
+        //Simulamos la tardanza en enviar el el documento a imprimir
+        Task.Delay(1000).Wait();
         return new Random().Next(2) == 0;
     }
 

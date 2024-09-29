@@ -19,9 +19,11 @@ public class PrintingController : Controller
     {
         var result = await _printingService.SendPrintRequestAsync(request);
         if (!result)
-            return BadRequest("La prioridad debe estar seteada entre 1 y 10, y el nombre no puede ser repetido.");
+        {
+            return BadRequest(new { success = false, message = "La prioridad debe estar seteada entre 1 y 10, y el nombre no puede ser repetido." });
+        }
 
-        return Ok(new {Message = "Solicitud de impresion enviada correctamente"});
+        return Ok(new { success = true, message = "Solicitud de impresión enviada correctamente" });
     }
     [HttpGet("status/{documentName}")]
     public async Task<ActionResult<PrintResponseDto>> GetPrintStatus(string documentName)
