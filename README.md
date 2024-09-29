@@ -21,7 +21,7 @@ Este proyecto implementa un sistema de impresión de documentos utilizando .NET 
 
 1. Clonar el repositorio:
    ```
-   git clone [URL_DEL_REPOSITORIO]
+   git clone https://github.com/Nickoro/Nicolas_Kinder_TFI_P1.git
    ```
 
 2. Navegar al directorio del proyecto:
